@@ -1,6 +1,4 @@
 
-
-
 public class Tour {
     private ChessBoard chessBoard; // Chess board on which the knight moves
     private Knight knightPiece; // Knight that is moved
@@ -146,8 +144,7 @@ public class Tour {
         System.out.println("Game Board");
         chessBoard.showGameBoard();
 
-        System.out
-                .printf("Number of moves: %d\n", knightPiece.getMoveCounter());
+        System.out.printf("Number of moves: %d\n", knightPiece.getMoveCounter());
 
         System.out.println();
     }
@@ -182,12 +179,16 @@ public class Tour {
             // an array
             possibleMoves = knightPiece.findPossibleMoves(chessBoard,
                     numPossibleMoves);
+            System.out.println(possibleMoves.length);
 
             // Using the array of possible moves, find the best move based on
             // the accessibility heuristic
             bestMove = knightPiece.findBestMove(chessBoard, possibleMoves);
 
             // Move the knight to the best move
+            for(int i=1;i<numPossibleMoves-1;i++){
+                System.out.println(possibleMoves[i]);
+            }
             knightPiece.move(bestMove);
         }
     }

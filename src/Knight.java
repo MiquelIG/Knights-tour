@@ -325,4 +325,5 @@ public class Knight {
         verticalMovesAvail[6] = 2; // D
         verticalMovesAvail[7] = 1; // D
     }
+
 }

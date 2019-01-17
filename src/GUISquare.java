@@ -2,7 +2,6 @@ import java.awt.*;
 import javax.swing.*;
 
 public class GUISquare extends JPanel {
-    private static final long serialVersionUID = 4729078763643541598L;
 
     private JLabel label; // Label in panel
 
