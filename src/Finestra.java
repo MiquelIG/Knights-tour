@@ -16,6 +16,8 @@ public class Finestra extends JFrame {
     // previous game
     private Timer timer; // Times the movement of the knight
     private final int MAX_BOARD_SIZE = 100; // Maximum board size
+    private int DELAY = 0;
+    private boolean space = false;
 
     // ****************************************************
     // Method: Finestra
@@ -25,9 +27,20 @@ public class Finestra extends JFrame {
     // ****************************************************
     public Finestra() {
         setDefaultCloseOperation(EXIT_ON_CLOSE);
-
+        this.addKeyListener(new keyboardHandler());
         newGame();
-        createTimer();
+        prompttimerkey();
+    }
+
+    private void prompttimerkey() {
+        if (JOptionPane.showConfirmDialog(null, "Do you want move the knight step by step? (pressing space)", "WARNING",
+                JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
+            space = true;
+        } else {
+            DELAY = Integer.parseInt(JOptionPane.showInputDialog("Enter an integer to set the delay between moves in ms"));
+            space = false;
+            createTimer();
+        }
     }
 
     // ****************************************************
@@ -69,7 +82,6 @@ public class Finestra extends JFrame {
 
         // Create new tour object with board size
         knightsTour = new Tour(boardSize);
-
         // Draw the squares in the window
         drawSquares();
     }
@@ -91,7 +103,6 @@ public class Finestra extends JFrame {
 
                 // Add mouse GUISquare in the array
                 guiSquares[row][col].addMouseListener(new SquareClickHandler());
-
                 // Alternate square color
                 setCorrectSquareColor(row, col);
 
@@ -115,10 +126,14 @@ public class Finestra extends JFrame {
     // position on the board.
     // ****************************************************
     private void setCorrectSquareColor(int row, int col) {
-        if ((row + col) % 2 == 0) {
-            guiSquares[row][col].setBackground(Color.lightGray);
+        if (!knightsTour.getChessBoard().getSquareAt(row, col).isVisited()) {
+            if ((row + col) % 2 == 0) {
+                guiSquares[row][col].setBackground(Color.pink);
+            } else {
+                guiSquares[row][col].setBackground(Color.MAGENTA);
+            }
         } else {
-            guiSquares[row][col].setBackground(Color.darkGray);
+            guiSquares[row][col].setBackground(Color.green);
         }
     }
 
@@ -211,7 +226,7 @@ public class Finestra extends JFrame {
     // a knight's move at an interval.
     // ****************************************************
     private void createTimer() {
-        int delay = 50; // Delay in milliseconds
+        int delay = DELAY; // Delay in milliseconds
 
         // Set flag indicating tour is finished to false.
         isTourFinished = false;
@@ -247,7 +262,7 @@ public class Finestra extends JFrame {
         int currentRow = knightsTour.getKnight().getCurrentRow();
         int currentCol = knightsTour.getKnight().getCurrentCol();
         GUISquare currentSquare = guiSquares[currentRow][currentCol];
-        Color flashColor = Color.orange;
+        Color flashColor = Color.red;
 
         currentSquare.setBackground(flashColor);
     }
@@ -258,7 +273,9 @@ public class Finestra extends JFrame {
     // Purpose: Starts the timer
     // ****************************************************
     private void startTimer() {
-        timer.start();
+        if (!space) {
+            timer.start();
+        }
     }
 
     // ****************************************************
@@ -300,7 +317,9 @@ public class Finestra extends JFrame {
         // stop the timer, set running flag to false
         // and tour finished flag to true.
         if (knightsTour.hasMove() == false) {
-            timer.stop();
+            if (!space) {
+                timer.stop();
+            }
             isTourRunning = false;
             isTourFinished = true;
         }
@@ -401,25 +420,6 @@ public class Finestra extends JFrame {
         }
     }
 
-	/*--NOTE--
-	 * Quadrants have not proven useful
-	//************************************************
-	//	Method: showQuadrants()
-	//
-	//	Purpose: Displays the accessibility heuristics
-	//************************************************
-	public void showQuadrants()
-	{
-		for(int iRow = 0; iRow < m_boardSize; iRow++)
-		{
-			for(int iCol = 0; iCol < m_boardSize; iCol++)
-			{
-				m_guiSquares[iRow][iCol].setText(Integer.toString(m_knightsTour.getSquare(iRow, iCol).getQuadrant()));
-			}
-		}
-	}
-	 */
-
     // ****************************************************
     // Class: SquareClickHandler
     //
@@ -434,12 +434,13 @@ public class Finestra extends JFrame {
         // ****************************************************
         @Override
         public void mouseClicked(MouseEvent meEvent) {
+            boolean auxBlock;
             // If the tour is NOT running when the mouse is clicked
-            if (isTourRunning == false) {
-                // If the tour has finished, i.e., user has not interrupted the
-                // tour
-                // with subsequent clicks and the tour is allowed to complete
-                if (isTourFinished == true) {
+            // If the tour has finished, i.e., user has not interrupted the
+            // tour
+            // with subsequent clicks and the tour is allowed to complete
+            if (!isTourRunning) {
+                if (isTourFinished) {
                     // Set tour finished back to false
                     isTourFinished = false;
 
@@ -448,6 +449,12 @@ public class Finestra extends JFrame {
 
                     // Setup a new game
                     newGame();
+                }
+                if (JOptionPane.showConfirmDialog(null, "Do you want to block the square?", "WARNING",
+                        JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
+                    auxBlock = true;
+                } else {
+                    auxBlock = false;
                 }
 
                 // Nested loops iterate through all squares
@@ -462,24 +469,54 @@ public class Finestra extends JFrame {
                             // source.
 
                             // Set the start position
-                            knightsTour.setStartPosition(rowNumber,
-                                    columnNumber);
+                            if (auxBlock) {
+                                knightsTour.getChessBoard().setSquareVisited(rowNumber, columnNumber);
+                                setCorrectSquareColor(rowNumber, columnNumber);
+                            } else {
+                                if (!knightsTour.getChessBoard().getSquareAt(rowNumber, columnNumber).isVisited()) {
+                                    knightsTour.setStartPosition(rowNumber, columnNumber);
 
-                            // Set tour running flag to true
-                            isTourRunning = true;
+                                    // Set tour running flag to true
+                                    isTourRunning = true;
 
-                            // Start the timer
-                            startTimer();
+                                    // Start the timer
+                                    startTimer();
 
-                            // No need to continue the loop at this point
-                            break;
+                                    // No need to continue the loop at this point
+                                    break;
+                                }
+                            }
+
                         }
                     }
                 }
+
             }
             // If the tour IS running when the mouse is clicked
             else {
                 tourPaused();
+            }
+        }
+    }
+
+    class keyboardHandler implements KeyListener {
+
+        @Override
+        public void keyTyped(KeyEvent e) {
+
+        }
+
+        @Override
+        public void keyPressed(KeyEvent e) {
+
+        }
+
+        @Override
+        public void keyReleased(KeyEvent e) {
+            if (e.getKeyCode() == 32) {
+                isTourFinished = false;
+                moveKnight();
+
             }
         }
     }

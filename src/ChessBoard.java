@@ -28,7 +28,6 @@ public class ChessBoard {
         BOARD_SIZE = dimension;
         playingBoard = new Square[BOARD_SIZE][BOARD_SIZE];
         currentKnight = knight;
-
         createSquares();
         createHeuristics();
     }
