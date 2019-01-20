@@ -5,25 +5,28 @@ public class Tour {
     private boolean foundMove = false; // Flag: true if Knight has a move
     // available, otherwise false
 
-    // ****************************************************
-    // Method: Tour
-    //
-    // Purpose: Constructor. Receives chess board and
-    // knight objects to set the members.
-    // ****************************************************
+    /**
+     * Constructor. Recieves chess board and knight objects to set the members
+     * @param chessBoard
+     * @param knight
+     */
     public Tour(ChessBoard chessBoard, Knight knight) {
         knightPiece = knight;
         this.chessBoard = chessBoard;
         this.chessBoard.addKnight(knightPiece);
     }
 
-    // ****************************************************
-    // Method: Tour
-    //
-    // Purpose: Constructor. Empty parameters.
+    /*
+    //Constructor. Empty parameters.
     // Creates knight, and passes knight to
     // the chess board.
-    // ****************************************************
+     */
+
+    /**
+     * Constructor. Empty parameters.
+     * Creates knight, and passes knight to
+     *the chess board.
+     */
     public Tour() {
         knightPiece = new Knight();
         chessBoard = new ChessBoard(knightPiece);
@@ -36,18 +39,24 @@ public class Tour {
     // it to the chess board with the int parameter
     // that sets the dimension of the chess board.
     // ****************************************************
+
+    /**
+     * onstructor. Creates a knight and passes
+     * it to the chess board with the int parameter
+     * @param dimension
+     */
     public Tour(int dimension) {
         knightPiece = new Knight();
         chessBoard = new ChessBoard(knightPiece, dimension);
     }
 
-    // ****************************************************
-    // Method: Tour
-    //
-    // Purpose: Constructor. Creates a default chess board
-    // with dimension 8 x 8 and starts the knight
-    // at the square using the two int parameters.
-    // ****************************************************
+    /**
+     * Constructor. Creates a default chess board
+     * with dimension 8 x 8 and starts the knight
+     * at the square using the two int parameters.
+     * @param startRow
+     * @param startCol
+     */
     public Tour(int startRow, int startCol) {
         knightPiece = new Knight(startRow, startCol);
         chessBoard = new ChessBoard(knightPiece);
@@ -60,6 +69,13 @@ public class Tour {
     // and sets knight start position, and the size
     // of the chess board.
     // ****************************************************
+
+    /**
+     *
+     * @param startRow
+     * @param startCol
+     * @param dimension
+     */
     public Tour(int startRow, int startCol, int dimension) {
         knightPiece = new Knight(startRow, startCol);
         chessBoard = new ChessBoard(knightPiece, dimension);
@@ -186,7 +202,7 @@ public class Tour {
             bestMove = knightPiece.findBestMove(chessBoard, possibleMoves);
 
             // Move the knight to the best move
-            for(int i=1;i<numPossibleMoves-1;i++){
+            for (int i = 1; i < numPossibleMoves - 1; i++) {
                 System.out.println(possibleMoves[i]);
             }
             knightPiece.move(bestMove);
